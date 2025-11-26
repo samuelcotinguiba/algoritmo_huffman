@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# Arquivos gerados pelo algoritmo
+arvore_huffman.json
+arvore_huffman.pkl
+arvore_huffman.png
+
+# Scripts auxiliares
+run.sh
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
