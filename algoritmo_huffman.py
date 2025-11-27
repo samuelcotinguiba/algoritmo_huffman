@@ -1,5 +1,4 @@
 import os
-import sys
 import runpy
 
 # Carregar módulos da pasta funcoes
@@ -14,8 +13,6 @@ _m = runpy.run_path(os.path.join(funcoes_dir, 'gerar_codigos.py'))
 gerar_codigos = _m['gerar_codigos']
 _m = runpy.run_path(os.path.join(funcoes_dir, 'codificar.py'))
 codificar = _m['codificar']
-_m = runpy.run_path(os.path.join(funcoes_dir, 'decodificar.py'))
-decodificar = _m['decodificar']
 _m = runpy.run_path(os.path.join(funcoes_dir, 'decodificar_binario.py'))
 decodificar_binario = _m['decodificar_binario']
 _m = runpy.run_path(os.path.join(funcoes_dir, 'exibir_codigos.py'))

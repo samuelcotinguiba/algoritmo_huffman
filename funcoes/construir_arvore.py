@@ -1,6 +1,5 @@
 from heapq import heappush, heappop
 import os
-import sys
 import runpy
 
 # Carregar Node da mesma pasta

@@ -1,6 +1,5 @@
 import json
 import os
-import sys
 import runpy
 from datetime import datetime
 
