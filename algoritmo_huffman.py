@@ -23,6 +23,7 @@ exibir_codigos = _m['exibir_codigos']
 _m = runpy.run_path(os.path.join(funcoes_dir, 'salvar_carregar_arvore.py'))
 salvar_arvore = _m['salvar_arvore']
 carregar_arvore = _m['carregar_arvore']
+listar_arvores = _m['listar_arvores']
 _m = runpy.run_path(os.path.join(funcoes_dir, 'plotar_arvore.py'))
 plotar_arvore = _m['plotar_arvore']
 
@@ -31,7 +32,8 @@ def main():
 	print("=== Algoritmo de Huffman ===")
 	print("\n1 - Codificar texto")
 	print("2 - Decodificar binário")
-	opcao = input("\nEscolha uma opção (1/2): ").strip()
+	print("3 - Listar árvores salvas")
+	opcao = input("\nEscolha uma opção (1/2/3): ").strip()
 	
 	if opcao == '1':
 		# CODIFICAÇÃO
@@ -52,8 +54,8 @@ def main():
 		# Codificação
 		codificado = codificar(texto, codigos)
 		
-		# Salvar árvore para decodificação posterior
-		salvar_arvore(raiz)
+		# Salvar árvore com texto original no histórico
+		salvar_arvore(raiz, texto)
 		
 		print(f"\n[ENTRADA] {texto}")
 		print(f"[CODIFICADO] {codificado}")
@@ -89,8 +91,17 @@ def main():
 			return
 		
 		try:
-			# Carregar árvore salva
-			raiz = carregar_arvore()
+			# Listar e escolher árvore
+			arvores = listar_arvores()
+			if not arvores:
+				print("\n✗ Nenhuma árvore salva. Codifique um texto primeiro.")
+				return
+			
+			escolha = input("\nEscolha o número da árvore (Enter = última): ").strip()
+			indice = -1 if not escolha else int(escolha) - 1
+			
+			# Carregar árvore escolhida
+			raiz = carregar_arvore(indice)
 			
 			# Gerar códigos para exibição
 			codigos = gerar_codigos(raiz)
@@ -105,6 +116,9 @@ def main():
 			print("\n✗ Erro: Árvore não encontrada!")
 			print("Execute a codificação primeiro para gerar a árvore.")
 			return
+		except (ValueError, IndexError) as e:
+			print(f"\n✗ Erro: {e}")
+			return
 		except Exception as e:
 			print(f"Erro na decodificação: {e}")
 			return
@@ -118,9 +132,20 @@ def main():
 				print(f"Erro ao plotar: {e}")
 				print("Instale matplotlib: pip3 install matplotlib")
 	
+	elif opcao == '3':
+		# LISTAR ÁRVORES
+		listar_arvores()
+	
 	else:
 		print("Opção inválida!")
 
 
 if __name__ == "__main__":
-	main()
+	while True:
+		main()
+		
+		continuar = input("\n\nDeseja continuar? (s/n): ").lower().strip()
+		if continuar != 's':
+			print("\n✓ Programa encerrado. Até logo!")
+			break
+		print("\n" + "="*50 + "\n")
