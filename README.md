@@ -471,8 +471,7 @@ algoritmo de huffman/
     ├── exibir_codigos.py        # Mostra tabela de códigos
     ├── decodificar_binario.py   # Decodifica com detalhes
     ├── plotar_arvore.py         # Visualiza árvore
-    ├── serializar_arvore.py     # Salva árvore em JSON
-    └── desserializar_arvore.py  # Carrega árvore do JSON
+    └── salvar_carregar_arvore.py # Salva/carrega árvore JSON
 ```
 
 ---
@@ -806,31 +805,56 @@ raio = 0.5  # Tamanho dos círculos
 
 ---
 
-### 10. `serializar_arvore.py`
+### 10. `salvar_carregar_arvore.py`
 
 ```python
-def serializar_arvore(raiz):
-    if raiz is None:
+def serializar_para_dict(node):
+    """Converte árvore em dicionário"""
+    if node is None:
         return None
-    
     return {
-        'char': raiz.char,
-        'freq': raiz.freq,
-        'left': serializar_arvore(raiz.left),
-        'right': serializar_arvore(raiz.right)
+        'char': node.char,
+        'freq': node.freq,
+        'left': serializar_para_dict(node.left),
+        'right': serializar_para_dict(node.right)
     }
 
-def salvar_arvore(raiz, arquivo='arvore_huffman.json'):
-    dados = serializar_arvore(raiz)
-    with open(arquivo, 'w', encoding='utf-8') as f:
-        json.dump(dados, f, ensure_ascii=False, indent=2)
+def dict_para_arvore(data):
+    """Reconstrói árvore a partir de dicionário"""
+    if data is None:
+        return None
+    node = Node(data['char'], data['freq'])
+    node.left = dict_para_arvore(data['left'])
+    node.right = dict_para_arvore(data['right'])
+    return node
+
+def salvar_arvore(raiz, caminho='arvore_huffman.json'):
+    """Salva a árvore de Huffman em um arquivo JSON"""
+    data = serializar_para_dict(raiz)
+    with open(caminho, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    print(f"\n✓ Árvore salva em: {caminho}")
+
+def carregar_arvore(caminho='arvore_huffman.json'):
+    """Carrega a árvore de Huffman de um arquivo JSON"""
+    with open(caminho, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    raiz = dict_para_arvore(data)
+    print(f"✓ Árvore carregada de: {caminho}")
+    return raiz
 ```
 
-**Propósito**: Converter árvore em formato JSON e salvar
+**Propósito**: Salvar e carregar árvore de Huffman em formato JSON
+
+**Funções incluídas**:
+- `serializar_para_dict()`: Converte árvore em dicionário (função auxiliar interna)
+- `dict_para_arvore()`: Reconstrói árvore do dicionário (função auxiliar interna)
+- `salvar_arvore()`: Interface pública para salvar árvore em JSON
+- `carregar_arvore()`: Interface pública para carregar árvore do JSON
 
 **Por que recursivo?**
 - Árvores são estruturas recursivas por natureza
-- Cada nó é serializado da mesma forma
+- Cada nó é processado da mesma forma
 - JSON suporta estruturas aninhadas perfeitamente
 
 **Formato JSON**:
@@ -852,45 +876,14 @@ def salvar_arvore(raiz, arquivo='arvore_huffman.json'):
 - `ensure_ascii=False`: Permite caracteres UTF-8 (acentos, emojis)
 - `indent=2`: Formata JSON legível
 
----
-
-### 11. `desserializar_arvore.py`
-
+**Uso**:
 ```python
-def desserializar_arvore(dados):
-    if dados is None:
-        return None
-    
-    node = Node(dados['char'], dados['freq'])
-    node.left = desserializar_arvore(dados['left'])
-    node.right = desserializar_arvore(dados['right'])
-    
-    return node
+# Salvar
+salvar_arvore(raiz)  # Salva em 'arvore_huffman.json'
 
-def carregar_arvore(arquivo='arvore_huffman.json'):
-    if not os.path.exists(arquivo):
-        return None
-    
-    with open(arquivo, 'r', encoding='utf-8') as f:
-        dados = json.load(f)
-    
-    return desserializar_arvore(dados)
+# Carregar
+raiz = carregar_arvore()  # Carrega de 'arvore_huffman.json'
 ```
-
-**Propósito**: Reconstruir árvore a partir do JSON
-
-**Por que verificar existência?**
-```python
-if not os.path.exists(arquivo):
-    return None
-```
-- Evita erro ao tentar decodificar sem ter codificado antes
-- Permite tratamento de erro no `main()`
-
-**Fluxo**:
-1. Verifica se arquivo existe
-2. Lê JSON
-3. Reconstrói árvore recursivamente
 
 ---
 
